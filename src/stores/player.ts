@@ -344,6 +344,8 @@ export const usePlayer = defineStore('player', () => {
         worker.postMessage({
             ending_file: queue.currenttrack.filepath,
             starting_file: queue.next.filepath,
+            ending_trackhash: queue.currenttrack.trackhash,
+            starting_trackhash: queue.next.trackhash,
         })
 
         worker.onmessage = e => {
