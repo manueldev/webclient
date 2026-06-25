@@ -55,7 +55,9 @@ export function animateLineChange(container: HTMLElement, lineEl: HTMLElement, c
         return true
     }
 
-    const lines = Array.from(container.querySelectorAll<HTMLElement>('#np-lyrics-synced .line'))
+    const lines = Array.from(
+        container.querySelectorAll<HTMLElement>('#np-lyrics-synced .line, #np-lyrics-synced .copyright')
+    )
     const rects = lines.map(el => el.getBoundingClientRect())
 
     const previousScrollTop = container.scrollTop

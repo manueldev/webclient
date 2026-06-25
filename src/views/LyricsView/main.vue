@@ -181,7 +181,8 @@ onMounted(() => {
         }
     }
 
-    .line.flip-animating {
+    .line.flip-animating,
+    .copyright.flip-animating {
         // duration must match DURATION_MS in utils/lyrics/flipScroll.ts
         transition:
             opacity 2s ease-in-out,
