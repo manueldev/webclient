@@ -32,9 +32,9 @@
             :duration="track.duration || 0"
             :help_text="track.help_text"
             :is_fav="is_fav"
-            :showFavIcon="!isFavoritesPage"
-            :showInlineFavIcon="settings.showInlineFavIcon"
-            :highlightFavoriteTracks="settings.highlightFavoriteTracks"
+            :show-fav-icon="!isFavoritesPage"
+            :show-inline-fav-icon="settings.showInlineFavIcon"
+            :highlight-favorite-tracks="settings.highlightFavoriteTracks"
             @showMenu="showMenu"
             @toggleFav="addToFav(track.trackhash)"
         />

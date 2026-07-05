@@ -1,7 +1,13 @@
 <template>
     <div class="now-playing-info">
         <div class="text">
-            <div class="title">{{ queue.currenttrack?.title || 'Swing Music' }}</div>
+            <div class="title">
+                {{
+                    (queue.currenttrack as ClassicalMovement)?.movement_title ??
+                    (queue.currenttrack as Track)?.title ??
+                    'Swing Music'
+                }}
+            </div>
             <div class="artist">
                 <ArtistName
                     v-if="queue.currenttrack"
@@ -22,13 +28,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
-import ArtistName from '../shared/ArtistName.vue'
-import HeartSvg from '../shared/HeartSvg.vue'
-
-import OptionSvg from '@/assets/icons/more.svg'
-import { showTrackContextMenu } from '@/helpers/contextMenuHandler'
 import useQueueStore from '@/stores/queue'
+import ArtistName from '../shared/ArtistName.vue'
+import { ClassicalMovement, Track } from '@/interfaces'
+import { showTrackContextMenu } from '@/helpers/contextMenuHandler'
 
 const context_menu_showing = ref(false)
 

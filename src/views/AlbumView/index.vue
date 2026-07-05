@@ -18,8 +18,7 @@
                         :is="item.component"
                         :key="index"
                         v-bind="item.props"
-                        @playThis="(trackhash?: string) => onPlayThis(item, trackhash)"
-                        @playDisc="playDisc"
+                        v-on="listenersFor(item)"
                     ></component>
                 </DynamicScrollerItem>
             </template>
@@ -251,16 +250,34 @@ const scrollerItems = computed(() => {
 
 function playFromAlbum(index: number, tracks = album.srcTracks) {
     const { title, albumhash } = album.info
-    tracklist.setFromAlbum(title, albumhash, tracks, album.info.is_classical ? album.works : undefined)
+    tracklist.setFromAlbum(title, albumhash, tracks, album.works || {})
     queue.play(index)
 }
 
-// SongItem emits playThis with no payload; WorkItem movements emit their
-// trackhash because work movements don't carry a master_index
+function listenersFor(item: { component: any }) {
+    const listeners: Record<string, (...args: any[]) => void> = {}
+
+    if ([SongItem, WorkItem, Header].includes(item.component)) {
+        listeners.playThis = (trackhash?: string) => onPlayThis(item as ScrollerItem, trackhash)
+    }
+
+    if (item.component === AlbumDiscBar) {
+        listeners.playDisc = playDisc
+    }
+
+    return listeners
+}
+
 function onPlayThis(item: ScrollerItem, trackhash?: string) {
     if (trackhash) {
         const index = album.srcTracks.findIndex(t => t.trackhash === trackhash)
-        if (index >= 0) playFromAlbum(index)
+
+        if (index < 0) {
+            console.warn(`onPlayThis: trackhash ${trackhash} not found in srcTracks`)
+            return
+        }
+
+        playFromAlbum(index)
         return
     }
 

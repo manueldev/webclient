@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 import { favType } from '@/enums'
 import updateMediaNotif from '@/helpers/mediaNotification'
-import { Track } from '@/interfaces'
+import { QueueItem, Track } from '@/interfaces'
 import { isFavorite } from '@/requests/favorite'
 import useInterface from './interface'
 
@@ -176,7 +176,7 @@ export default defineStore('Queue', {
             const { tracklist } = useTracklist()
             return tracklist[this.previndex]
         },
-        currenttrack(): Track {
+        currenttrack(): QueueItem {
             const { tracklist } = useTracklist()
             const current = tracklist[this.currentindex]
             if (!current) {

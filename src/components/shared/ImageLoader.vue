@@ -223,6 +223,7 @@ onMounted(() => {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: top left;
         opacity: 0;
         transition: opacity ease-in-out;
         z-index: 1;

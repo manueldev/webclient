@@ -91,6 +91,11 @@ export default defineStore('album', {
             this.otherVersions = album.other_versions
             this.extractColors()
 
+            this.works = album.works || []
+            if (!this.srcTracks.length && this.works.length) {
+                this.srcTracks = this.works.flatMap(work => work.movements)
+            }
+
             const tracks = sortByTrackNumber(this.srcTracks)
             this.discs = createDiscs(tracks)
 
@@ -104,7 +109,6 @@ export default defineStore('album', {
                 t.master_index = index
             })
 
-            this.works = album.works || []
             this.extractColors()
         },
         // async fetchArtistAlbums() {

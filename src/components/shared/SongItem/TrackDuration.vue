@@ -9,7 +9,7 @@
             <HeartSvg :state="is_fav" :no_emit="true" />
         </div>
         <div class="song-duration" :class="{ has_help_text: help_text }">{{ formatSeconds(duration) }}</div>
-        <div class="song-duration help-text" v-if="help_text">
+        <div v-if="help_text" class="song-duration help-text">
             {{ help_text }}
         </div>
         <div class="options-icon circular" @click.stop="$emit('showMenu', $event)" @dblclick.stop="() => {}">

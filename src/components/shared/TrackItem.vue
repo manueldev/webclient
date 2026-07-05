@@ -1,6 +1,6 @@
 <template>
     <div
-        class="track-item"
+        class="track-item noSelect"
         :class="[
             {
                 currentInQueue: isCurrent,
@@ -8,7 +8,8 @@
             { contexton: context_on },
             { 'is-classical-track': isClassicalTrack },
         ]"
-        @click="playThis(track)"
+        @click.prevent.stop="playThis"
+        @dblclick.prevent.stop="() => emit('playThis')"
         @contextmenu.prevent="showMenu"
     >
         <div class="album-art">
@@ -18,19 +19,26 @@
                 class="now-playing-track-indicator image"
                 :class="{ last_played: !isCurrentPlaying }"
             ></div>
-            <HeartSvg :state="is_fav" @handleFav="addToFav(track.trackhash)" />
+            <HeartSvg :state="is_fav" :no_emit="true" @click.stop="() => addToFav(track.trackhash)" />
         </div>
         <div class="tags">
             <div v-tooltip class="title">
-                <span class="ellip">
-                    {{ track.title }}
-                </span>
+                <span class="ellip"> {{ track.title }} </span>
             </div>
             <hr />
             <div class="artist">
                 <ArtistName :artists="track.artists" :albumartists="track.albumartists" :smaller="true" />
             </div>
         </div>
+        <TrackDuration
+            v-if="!isQueueTrack && isClassicalTrack"
+            :duration="track.duration ?? 0"
+            :is_fav="is_fav"
+            :show-inline-fav-icon="false"
+            :highlight-favorite-tracks="false"
+            @showMenu="showMenu"
+            @toggleFav="() => addToFav(track.trackhash)"
+        />
         <div class="float-buttons flex">
             <!-- <div
                 v-if="!isClassicalTrack"
@@ -49,29 +57,19 @@
                 <DelSvg />
             </div>
         </div>
-        <TrackDuration
-            v-if="isClassicalTrack"
-            :duration="track.duration ?? 0"
-            :is_fav="is_fav"
-            :show-inline-fav-icon="false"
-            :highlight-favorite-tracks="false"
-            @showMenu="showMenu"
-            @toggleFav="addToFav"
-        />
     </div>
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
 
-import useColor from '@/stores/colors'
 import useTracklist from '@/stores/queue/tracklist'
 
 import { paths } from '@/config'
 import { favType } from '@/enums'
 import { showTrackContextMenu as showContext } from '@/helpers/contextMenuHandler'
 import favoriteHandler from '@/helpers/favoriteHandler'
-import { Track } from '@/interfaces'
+import { ClassicalMovement, Track } from '@/interfaces'
 
 import DelSvg from '@/assets/icons/plus.svg'
 import ArtistName from './ArtistName.vue'
@@ -79,7 +77,7 @@ import HeartSvg from './HeartSvg.vue'
 import TrackDuration from './SongItem/TrackDuration.vue'
 
 const props = defineProps<{
-    track: Track
+    track: Track | ClassicalMovement
     isCurrent: boolean
     isCurrentPlaying: boolean
     isQueueTrack?: boolean
@@ -88,7 +86,6 @@ const props = defineProps<{
 }>()
 
 const player = useTracklist()
-const colors = useColor()
 const context_on = ref(false)
 const is_fav = ref(props.track.is_favorite)
 
@@ -100,7 +97,11 @@ const emit = defineEmits<{
     (e: 'playThis'): void
 }>()
 
-const playThis = (track: Track) => {
+const playThis = () => {
+    if (!props.isQueueTrack) {
+        return
+    }
+
     emit('playThis')
 }
 
@@ -128,7 +129,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .track-item.currentInQueue {
-    background-color: $gray5;
+    background-color: $gray;
     color: rgb(229, 229, 229);
 }
 
@@ -153,6 +154,7 @@ onBeforeUnmount(() => {
         .title {
             width: fit-content;
             font-weight: 600;
+            cursor: pointer;
         }
     }
 

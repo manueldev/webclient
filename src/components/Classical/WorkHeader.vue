@@ -41,6 +41,7 @@ const title = computed(() => {
     padding-left: $small;
     // separates this work from whatever sits above it (previous work or tracks)
     padding-top: 2rem;
+    padding-bottom: $smaller;
 }
 
 .worktitle {

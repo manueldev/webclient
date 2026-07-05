@@ -6,7 +6,10 @@
             <div v-for="movement in work.movements" :key="movement.movement_title" class="workmovement">
                 <TrackItem
                     :track="{ ...movement, title: movement.movement_title }"
+                    :is-queue-track="$route.name === Routes.nowPlaying"
                     :is-classical-track="true"
+                    :is-current="queue.currenttrack?.trackhash === movement.trackhash"
+                    :is-current-playing="queue.currenttrack?.trackhash === movement.trackhash && queue.playing"
                     @playThis="$emit('playThis', movement.trackhash)"
                 />
             </div>
@@ -15,9 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import { ClassicalWork } from '@/interfaces'
+import { Routes } from '@/router'
 import WorkHeader from './WorkHeader.vue'
+import { ClassicalWork } from '@/interfaces'
 import TrackItem from '../shared/TrackItem.vue'
+import useQueueStore from '@/stores/queue'
+
+const queue = useQueueStore()
 
 defineProps<{
     work: ClassicalWork
