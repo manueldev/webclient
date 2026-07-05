@@ -2,6 +2,7 @@
     <div class="workheader">
         <div class="workcomposer">
             {{ work.composer }}
+            <span v-if="playable" class="play" @click.stop="$emit('playWork')"> <PlaySvg /> Play</span>
         </div>
         <div class="worktitle">
             {{ title }}
@@ -12,9 +13,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { QueueWork } from '@/interfaces'
+import PlaySvg from '@/assets/icons/play.svg'
 
 const props = defineProps<{
     work: QueueWork
+    playable?: boolean
+}>()
+
+defineEmits<{
+    (e: 'playWork'): void
 }>()
 
 const title = computed(() => {
@@ -53,5 +60,28 @@ const title = computed(() => {
     font-size: 12px;
     color: $gray1;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+
+    .play {
+        margin-left: $small;
+        opacity: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: opacity 0.2s ease-out;
+
+        svg {
+            height: 12px;
+        }
+    }
+
+    .play {
+        text-transform: none;
+    }
+}
+
+.workheader:hover .workcomposer .play {
+    opacity: 1;
 }
 </style>

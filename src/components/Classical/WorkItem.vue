@@ -1,6 +1,6 @@
 <template>
     <div class="classicalwork">
-        <WorkHeader :work="work" />
+        <WorkHeader :work="work" :playable="true" @playWork="$emit('playWork', work.workhash)" />
 
         <div class="workmovements">
             <div v-for="movement in work.movements" :key="movement.movement_title" class="workmovement">
@@ -33,6 +33,8 @@ defineProps<{
 defineEmits<{
     // eslint-disable-next-line no-unused-vars
     (event: 'playThis', trackhash: string): void
+    // eslint-disable-next-line no-unused-vars
+    (event: 'playWork', workhash: string): void
 }>()
 </script>
 

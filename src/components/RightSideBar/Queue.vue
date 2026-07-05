@@ -23,7 +23,7 @@
                     :size-dependencies="[item.props]"
                     :data-index="index"
                 >
-                    <WorkHeader v-if="item.isHeader" :work="item.props.work" />
+                    <WorkHeader v-if="item.isHeader" :work="item.props.work" :class="{ 'first-item': index === 0 }" />
                     <component
                         :is="item.component"
                         v-else
@@ -176,7 +176,11 @@ function scrollToCurrent() {
 
     // the group runs from the header to the last consecutive same-work movement
     let groupEnd = currentPos
-    while (groupEnd + 1 < items.length && !items[groupEnd + 1].isHeader && items[groupEnd + 1].workhash === current.workhash) {
+    while (
+        groupEnd + 1 < items.length &&
+        !items[groupEnd + 1].isHeader &&
+        items[groupEnd + 1].workhash === current.workhash
+    ) {
         groupEnd++
     }
 
@@ -213,5 +217,9 @@ onBeforeUnmount(() => {
 .queue-virtual-scroller {
     height: 100%;
     overflow: hidden;
+
+    .workheader.first-item {
+        padding-top: $smaller;
+    }
 }
 </style>

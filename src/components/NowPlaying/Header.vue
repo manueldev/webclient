@@ -20,6 +20,7 @@
                     :image="paths.images.thumb.original + queue.currenttrack?.image"
                     :blurhash="queue.currenttrack?.blurhash"
                     :duration="1000"
+                    :panels="true"
                 />
             </RouterLink>
         </div>

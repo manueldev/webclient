@@ -265,7 +265,21 @@ function listenersFor(item: { component: any }) {
         listeners.playDisc = playDisc
     }
 
+    if (item.component === WorkItem) {
+        listeners.playWork = playWork
+    }
+
     return listeners
+}
+
+function playWork(workhash: string) {
+    const work = album.works.find(w => w.workhash === workhash)
+    if (!work) return
+
+    const movementHashes = new Set(work.movements.map(m => m.trackhash))
+    const tracks = album.srcTracks.filter(t => movementHashes.has(t.trackhash))
+
+    if (tracks.length) playFromAlbum(0, tracks)
 }
 
 function onPlayThis(item: ScrollerItem, trackhash?: string) {

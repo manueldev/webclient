@@ -108,7 +108,7 @@ export const getAlbumVersions = async (og_album_title: string, albumhash: string
     return []
 }
 
-export async function getAlbumTracks(albumhash: string): Promise<Track[]> {
+export async function getAlbumTracks(albumhash: string): Promise<Track[] | ClassicalWork[]> {
     const { data } = await useAxios({
         url: albumUrl + `/${albumhash}/` + 'tracks',
         method: 'GET',

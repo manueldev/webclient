@@ -25,10 +25,19 @@
                 imgClass || ''
             }`"
             :style="{
-                transitionDuration: `${duration}ms`,
+                transition: `opacity ${duration}ms ease-in-out, object-position 0.3s ease`,
+                objectPosition: imagePositions[img.key],
             }"
             @load="onDomImageLoad(img.key, $event)"
         />
+        <template v-if="showPanelButtons">
+            <button class="panel-btn prev" aria-label="Previous cover panel" @click.stop.prevent="stepPanel(-1)">
+                <RightArrowSvg />
+            </button>
+            <button class="panel-btn next" aria-label="Next cover panel" @click.stop.prevent="stepPanel(1)">
+                <RightArrowSvg />
+            </button>
+        </template>
     </div>
 </template>
 
@@ -36,12 +45,18 @@
 import { decode } from 'blurhash'
 import { computed, ref, watch, nextTick, onMounted } from 'vue'
 
+import RightArrowSvg from '@/assets/icons/right-arrow.svg'
+
 const props = defineProps<{
     image: string
     duration: number
     blurhash?: string
     imgClass?: string
+    panels?: boolean
 }>()
+
+const MAX_PANELS = 4
+const PANEL_RATIO_TOLERANCE = 0.12
 
 const imageKey = ref(0)
 const activeIndex = ref(0)
@@ -54,6 +69,46 @@ const images = ref<Array<{ src: string; key: number }>>([])
 const imageRefs = ref<Record<number, HTMLImageElement | null>>({})
 const containerWidth = computed(() => imageLoader.value?.clientWidth)
 
+const panelCount = ref(1)
+const panelAxis = ref<'x' | 'y'>('x')
+const panelIndex = ref(0)
+const imagePositions = ref<Record<number, string>>({})
+const canHover = window.matchMedia('(hover: hover)').matches
+
+const showPanelButtons = computed(() => !!props.panels && canHover && panelCount.value > 1)
+
+const panelPosition = computed(() => {
+    if (panelCount.value < 2) return ''
+
+    // panel i of n sits at i/(n-1) * 100% along the long axis,
+    // as if the scan were folded n times
+    const pct = (panelIndex.value / (panelCount.value - 1)) * 100
+    return panelAxis.value === 'x' ? `${pct}% 0%` : `0% ${pct}%`
+})
+
+watch(panelPosition, position => {
+    const active = images.value[images.value.length - 1]
+    if (active && position) {
+        imagePositions.value[active.key] = position
+    }
+})
+
+function detectPanels(img: HTMLImageElement) {
+    if (!props.panels || !img.naturalWidth || !img.naturalHeight) return
+
+    const ratio = Math.max(img.naturalWidth, img.naturalHeight) / Math.min(img.naturalWidth, img.naturalHeight)
+    const n = Math.round(ratio)
+
+    if (n >= 2 && n <= MAX_PANELS && Math.abs(ratio / n - 1) <= PANEL_RATIO_TOLERANCE) {
+        panelCount.value = n
+        panelAxis.value = img.naturalWidth > img.naturalHeight ? 'x' : 'y'
+    }
+}
+
+function stepPanel(dir: number) {
+    panelIndex.value = (panelIndex.value + dir + panelCount.value) % panelCount.value
+}
+
 watch(
     () => props.image,
     async newImage => {
@@ -62,6 +117,9 @@ watch(
 
         imageLoaded.value = false
         readyToShowKeys.value.clear()
+
+        panelCount.value = 1
+        panelIndex.value = 0
 
         const imageKeyValue = imageKey.value++
         const newImageObj = {
@@ -75,6 +133,7 @@ watch(
             const removedImage = images.value.shift()
             if (removedImage) {
                 delete imageRefs.value[removedImage.key]
+                delete imagePositions.value[removedImage.key]
                 readyToShowKeys.value.delete(removedImage.key)
             }
         }
@@ -129,6 +188,10 @@ function onDomImageLoad(imageKeyValue: number, eventOrElement: Event | HTMLImage
     if (imgElement.complete && imgElement.naturalHeight > 0) {
         const minHeight = Math.min(imageLoader.value?.clientWidth || 0, imgElement.naturalHeight)
         imageHeights.value = { ...imageHeights.value, [imageKeyValue]: minHeight }
+
+        if (images.value[images.value.length - 1]?.key === imageKeyValue) {
+            detectPanels(imgElement)
+        }
 
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -231,6 +294,49 @@ onMounted(() => {
         &.active {
             opacity: 1;
         }
+    }
+
+    .panel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2rem;
+        width: 2rem;
+        padding: 0;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        z-index: 2;
+
+        svg {
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+
+        &.prev {
+            left: $small;
+
+            svg {
+                transform: rotate(180deg);
+            }
+        }
+
+        &.next {
+            right: $small;
+        }
+
+        &:focus-visible {
+            opacity: 1;
+        }
+    }
+
+    &:hover .panel-btn {
+        opacity: 1;
+        transition-delay: 0.25s;
     }
 }
 </style>
