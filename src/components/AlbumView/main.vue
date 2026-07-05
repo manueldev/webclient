@@ -88,7 +88,8 @@ useVisibility(albumheaderthing, handleVisibilityState)
         img {
             height: 16rem;
             max-width: 16rem;
-            object-fit: contain;
+            object-fit: cover;
+            object-position: top left;
         }
     }
 

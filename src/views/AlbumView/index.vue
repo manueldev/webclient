@@ -31,12 +31,13 @@
 import { computed, nextTick } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from 'vue-router'
 
-import { Track } from '@/interfaces'
+import { ClassicalWork, Track } from '@/interfaces'
 
 import useAlbumStore from '@/stores/pages/album'
 import useQueueStore from '@/stores/queue'
 import useTracklist from '@/stores/queue/tracklist'
 
+import WorkItem from '@/components/Classical/WorkItem.vue'
 import AlbumDiscBar from '@/components/AlbumView/AlbumDiscBar.vue'
 import GenreBanner from '@/components/AlbumView/GenreBanner.vue'
 import Header from '@/components/AlbumView/main.vue'
@@ -62,6 +63,7 @@ interface ScrollerItem {
         | typeof CardScroller
         | typeof AlbumsFetcher
         | typeof Stats
+        | typeof WorkItem
     props?: any
 }
 
@@ -81,6 +83,20 @@ class songItem {
                   source: dropSources.album,
               }
         this.component = track.is_album_disc_number ? AlbumDiscBar : SongItem
+    }
+}
+
+class workItem {
+    id: string | number
+    props = {}
+    component: typeof WorkItem
+
+    constructor(work: ClassicalWork) {
+        this.id = work.workhash || Math.random()
+        this.props = {
+            work,
+        }
+        this.component = WorkItem
     }
 }
 
@@ -113,6 +129,12 @@ const fetched_similar_hash: ScrollerItem = {
 function getSongItems() {
     return album.tracks.map(track => {
         return new songItem(track)
+    })
+}
+
+function getWorkItems() {
+    return album.works.map(work => {
+        return new workItem(work)
     })
 }
 
@@ -190,7 +212,9 @@ const scrollerItems = computed(() => {
     moreFrom = moreFrom.filter(item => item.id !== undefined)
     const otherVersionsComponent = getAlbumVersionsComponent()
 
-    let components = [header, ...getSongItems(), genreBanner]
+    const pageItems = album.info.is_classical ? getWorkItems() : getSongItems()
+
+    let components = [header, ...pageItems, genreBanner]
 
     // if (album.tracks.length) {
     //     components.push(AlbumVersionsFetcher)

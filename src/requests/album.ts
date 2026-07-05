@@ -1,5 +1,5 @@
 import { paths } from '@/config'
-import { Album, StatItem, Track } from '@/interfaces'
+import { Album, ClassicalWork, StatItem, Track } from '@/interfaces'
 import { NotifType, useToast } from '@/stores/notification'
 import useAxios from './useAxios'
 
@@ -15,6 +15,7 @@ const getAlbumData = async (albumhash: string, albumlimit: number) => {
     interface AlbumData {
         info: Album
         tracks: Track[]
+        works: ClassicalWork[]
         copyright: string
         extra: {
             track_total: number

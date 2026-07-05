@@ -5,8 +5,8 @@
             params: { albumhash: album.albumhash },
         }"
         class="album-card"
-        @contextmenu.prevent="showMenu"
         :class="{ 'context-menu-open': contextMenuFlag }"
+        @contextmenu.prevent="showMenu"
     >
         <div class="with-img rounded-sm no-scroll">
             <div
@@ -126,6 +126,7 @@ function showMenu(e: MouseEvent) {
             height: 100%;
             aspect-ratio: 1;
             object-fit: cover;
+            object-position: top left;
         }
 
         .gradient {

@@ -5,7 +5,7 @@ import { getAlbum, getAlbumsFromArtist, getAlbumVersions, getSimilarAlbums } fro
 
 import { paths } from '@/config'
 import { FuseTrackOptions } from '@/enums'
-import { Album, AlbumDisc, FuseResult, StatItem, Track } from '@/interfaces'
+import { Album, AlbumDisc, ClassicalWork, FuseResult, StatItem, Track } from '@/interfaces'
 import { router, Routes } from '@/router'
 import { maxAbumCards } from '@/stores/content-width'
 import { useFuse } from '@/utils'
@@ -54,9 +54,12 @@ export default defineStore('album', {
             }
         >{},
         srcTracks: <Track[]>[],
-        artistAlbums: <{
-            [key: string]: Album[]
-        }>{},
+        works: <ClassicalWork[]>[],
+        artistAlbums: <
+            {
+                [key: string]: Album[]
+            }
+        >{},
         otherVersions: <Album[]>[],
         similarAlbums: <Album[]>[],
         bio: null,
@@ -101,6 +104,7 @@ export default defineStore('album', {
                 t.master_index = index
             })
 
+            this.works = album.works || []
             this.extractColors()
         },
         // async fetchArtistAlbums() {

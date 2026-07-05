@@ -1,14 +1,12 @@
 <template>
     <div
-        v-wave="{
-            duration: 0.35,
-        }"
         class="track-item"
         :class="[
             {
                 currentInQueue: isCurrent,
             },
             { contexton: context_on },
+            { 'is-classical-track': isClassicalTrack },
         ]"
         @click="playThis(track)"
         @contextmenu.prevent="showMenu"
@@ -34,6 +32,7 @@
         </div>
         <div class="float-buttons flex">
             <div
+                v-if="!isClassicalTrack"
                 class="fav-icon"
                 :title="is_fav ? 'Add to favorites' : 'Remove from favorites'"
                 @click.stop="() => addToFav(track.trackhash)"
@@ -49,6 +48,15 @@
                 <DelSvg />
             </div>
         </div>
+        <TrackDuration
+            v-if="isClassicalTrack"
+            :duration="track.duration ?? 0"
+            :is_fav="is_fav"
+            :show-inline-fav-icon="false"
+            :highlight-favorite-tracks="false"
+            @showMenu="showMenu"
+            @toggleFav="addToFav"
+        />
     </div>
 </template>
 
@@ -67,7 +75,7 @@ import { Track } from '@/interfaces'
 import DelSvg from '@/assets/icons/plus.svg'
 import ArtistName from './ArtistName.vue'
 import HeartSvg from './HeartSvg.vue'
-import { getBackgroundColor, getTextColor } from '@/utils/colortools/shift'
+import TrackDuration from './SongItem/TrackDuration.vue'
 
 const props = defineProps<{
     track: Track
@@ -75,6 +83,7 @@ const props = defineProps<{
     isCurrentPlaying: boolean
     isQueueTrack?: boolean
     index?: number
+    isClassicalTrack?: boolean
 }>()
 
 const player = useTracklist()
@@ -129,11 +138,15 @@ onBeforeUnmount(() => {
 
 .track-item {
     display: grid;
-    grid-template-columns: min-content 1fr max-content;
+    grid-template-columns: min-content 1fr max-content max-content;
     align-items: center;
     padding: $small;
     transition: background-color 0.2s ease-out;
     border-radius: 8px;
+
+    &.is-queue-track {
+        grid-template-columns: min-content 1fr max-content;
+    }
 
     .tags {
         .title {
@@ -145,6 +158,7 @@ onBeforeUnmount(() => {
     .float-buttons {
         opacity: 0;
         gap: $small;
+
         & > * {
             cursor: pointer;
         }
@@ -176,7 +190,7 @@ onBeforeUnmount(() => {
     }
 
     &:hover {
-        background-color: $gray4;
+        background-color: $gray5;
         color: $white !important;
 
         .float-buttons {

@@ -39,7 +39,7 @@ defineEmits<{
 </script>
 
 <style lang="scss">
-.songlist-item > .options-and-duration {
+.options-and-duration {
     display: flex;
     align-items: center;
     justify-content: end;
