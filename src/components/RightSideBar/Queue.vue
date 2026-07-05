@@ -8,24 +8,31 @@
             :description="'When you start playing songs, they will appear here.'"
             :icon="QueueSvg"
         />
-        <RecycleScroller
+        <DynamicScroller
             id="queue-scrollable"
-            v-slot="{ item, index }"
+            ref="scroller"
             class="scroller"
             style="height: 100%"
             :items="scrollerItems"
-            :item-size="itemHeight"
-            key-field="id"
+            :min-item-size="itemHeight"
         >
-            <TrackItem
-                :index="index"
-                :track="item.track"
-                :is-current="index === queue.currentindex"
-                :is-current-playing="index === queue.currentindex && queue.playing"
-                :is-queue-track="true"
-                @playThis="playFromQueue(index)"
-            />
-        </RecycleScroller>
+            <template #default="{ item, index, active }">
+                <DynamicScrollerItem
+                    :item="item"
+                    :active="active"
+                    :size-dependencies="[item.props]"
+                    :data-index="index"
+                >
+                    <component
+                        :is="item.component"
+                        v-bind="item.props"
+                        :is-current="index === queue.currentindex"
+                        :is-current-playing="index === queue.currentindex && queue.playing"
+                        @playThis="playFromQueue(index)"
+                    ></component>
+                </DynamicScrollerItem>
+            </template>
+        </DynamicScroller>
     </div>
 </template>
 
@@ -43,18 +50,23 @@ import QueueSvg from '@/assets/icons/queue.svg'
 import PlayingFrom from '../NowPlaying/PlayingFrom.vue'
 
 const itemHeight = 64
-const paddingTop = 16
 
 const queue = useQStore()
 const store = useTracklist()
 const mouseover = ref(false)
+const scroller = ref<any>(null)
 
 const { focusCurrentInSidebar, setScrollFunction } = useInterface()
 
 const scrollerItems = computed(() => {
     return store.tracklist.map((track, index) => ({
-        track,
         id: index,
+        component: TrackItem,
+        props: {
+            track,
+            index,
+            isQueueTrack: true,
+        },
     }))
 })
 
@@ -65,13 +77,7 @@ function playFromQueue(index: number) {
 const show_above = 1 // the number of tracks to show above the current track
 
 function scrollToCurrent() {
-    const elem = document.getElementById('queue-scrollable') as HTMLElement
-
-    const top = paddingTop + (queue.currentindex - show_above) * itemHeight
-    elem.scroll({
-        top,
-        behavior: 'smooth',
-    })
+    scroller.value?.scrollToItem(Math.max(queue.currentindex - show_above, 0))
 }
 
 onMounted(() => {

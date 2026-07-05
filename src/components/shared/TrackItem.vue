@@ -18,6 +18,7 @@
                 class="now-playing-track-indicator image"
                 :class="{ last_played: !isCurrentPlaying }"
             ></div>
+            <HeartSvg :state="is_fav" @handleFav="addToFav(track.trackhash)" />
         </div>
         <div class="tags">
             <div v-tooltip class="title">
@@ -31,14 +32,14 @@
             </div>
         </div>
         <div class="float-buttons flex">
-            <div
+            <!-- <div
                 v-if="!isClassicalTrack"
                 class="fav-icon"
                 :title="is_fav ? 'Add to favorites' : 'Remove from favorites'"
                 @click.stop="() => addToFav(track.trackhash)"
             >
                 <HeartSvg :state="is_fav" :no_emit="true" />
-            </div>
+            </div> -->
             <div
                 v-if="isQueueTrack"
                 class="remove-track"
@@ -200,6 +201,10 @@ onBeforeUnmount(() => {
         .remove-track {
             transform: translateY(0) rotate(45deg);
         }
+
+        .heart-button {
+            opacity: 1;
+        }
     }
 
     hr {
@@ -235,6 +240,17 @@ onBeforeUnmount(() => {
         opacity: 0.67;
         width: fit-content;
         font-weight: 700;
+    }
+
+    .heart-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 3rem;
+        width: 3rem;
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
     }
 }
 </style>
