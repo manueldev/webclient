@@ -91,8 +91,11 @@ export interface CatalogueId {
     hash: string
 }
 
-export interface ClassicalMovement extends Partial<Track> {
+export interface ClassicalMovement extends Track {
     movement_title: string
+    // added when the movement is added to the queue,
+    // links back to tracklist.worklist
+    workhash?: string
 }
 
 export interface ClassicalWork {
@@ -105,6 +108,9 @@ export interface ClassicalWork {
     workhash: string
     movements: ClassicalMovement[]
 }
+
+export type QueueItem = Track | ClassicalMovement
+export type QueueWork = Omit<ClassicalWork, 'movements'>
 
 export interface Mix {
     id: string

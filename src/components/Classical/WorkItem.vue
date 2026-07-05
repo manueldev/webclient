@@ -1,20 +1,14 @@
 <template>
     <div class="classicalwork">
-        <div class="workheader">
-            <div class="workcomposer">
-                {{ work.composer }}
-            </div>
-            <div class="worktitle">
-                {{ getWorkTitle() }}
-
-            </div>
-        </div>
+        <WorkHeader :work="work" />
 
         <div class="workmovements">
             <div v-for="movement in work.movements" :key="movement.movement_title" class="workmovement">
-                <!-- <ClassicalTrack :track="movement" /> -->
-                <!-- <SongItem :track="{ ...movement, title: movement.movement_title }" :index="1" :hide_album="true" /> -->
-                <TrackItem :track="{ ...movement, title: movement.movement_title }" :is-classical-track="true" />
+                <TrackItem
+                    :track="{ ...movement, title: movement.movement_title }"
+                    :is-classical-track="true"
+                    @playThis="$emit('playThis', movement.trackhash)"
+                />
             </div>
         </div>
     </div>
@@ -22,54 +16,24 @@
 
 <script setup lang="ts">
 import { ClassicalWork } from '@/interfaces'
-import ClassicalTrack from './Track.vue'
-import TrackItem from '../shared/TrackItem.vue';
-import SongItem from '../shared/SongItem.vue';
+import WorkHeader from './WorkHeader.vue'
+import TrackItem from '../shared/TrackItem.vue'
 
-const props = defineProps<{
+defineProps<{
     work: ClassicalWork
 }>()
 
-const getWorkTitle = () => {
-    let title = props.work.name
-
-    const catalogueIds = (props.work.catalogue_ids ?? []).map(id => id.name).join(', ')
-    if (catalogueIds) {
-        title += ', ' + catalogueIds
-    }
-
-    if (props.work.subtitle) {
-        title += ' · ' + `"${props.work.subtitle}"`
-    }
-
-    return title
-}
+defineEmits<{
+    // eslint-disable-next-line no-unused-vars
+    (event: 'playThis', trackhash: string): void
+}>()
 </script>
 
 <style lang="scss">
 .classicalwork {
     display: flex;
     flex-direction: column;
-    padding-top: 2rem;
-}
-
-.workheader {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding-left: $small;
-}
-
-.worktitle {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.workcomposer {
-    font-size: 12px;
-    color: $gray1;
-    text-transform: uppercase;
-
+    // top spacing comes from WorkHeader
 }
 
 .workmovements {
