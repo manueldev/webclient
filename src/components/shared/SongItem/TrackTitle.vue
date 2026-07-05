@@ -72,9 +72,11 @@ defineEmits<{
     .album-art {
       width: 3rem;
       height: 3rem;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: top left;
       cursor: pointer;
       z-index: 20;
+      border-radius: 4px;
     }
 
     .now-playing-track-indicator {
