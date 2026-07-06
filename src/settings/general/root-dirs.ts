@@ -33,7 +33,7 @@ const list_root_dirs: Setting = {
             },
         })),
     defaultAction: () => {},
-    action: () => triggerScan(),
+    action: () => triggerScan(true),
 }
 
 const show_playlists_in_folders: Setting = {

@@ -4,7 +4,7 @@
             <div class="username ellip2">Hi {{ auth.user.firstname || auth.user.username }}</div>
         </div>
         <div class="separator"></div>
-        <div class="item scan" @click="triggerScan">
+        <div class="item scan" @click="() => triggerScan(false)">
             <div class="label">Quick scan</div>
             <ReloadSvg />
         </div>
@@ -64,7 +64,10 @@ const modal = useModal()
         max-height: 36px;
         border-radius: 8px;
         cursor: pointer;
-        transition: background-color 0.2s ease-out, opacity 0.2s ease-out, box-shadow 0.2s ease-out;
+        transition:
+            background-color 0.2s ease-out,
+            opacity 0.2s ease-out,
+            box-shadow 0.2s ease-out;
 
         &:hover {
             background-color: $gray4;

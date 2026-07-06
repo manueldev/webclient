@@ -84,6 +84,9 @@ export default defineStore('settings', {
         device_name: '',
         device_id: '',
         licenseInfo: <LicenseInfo | null>null,
+
+        // classical support
+        classical_enabled: false,
     }),
     actions: {
         mapDbSettings(settings: DBSettings) {
@@ -117,6 +120,7 @@ export default defineStore('settings', {
             this.device_name = settings.deviceName
             this.device_id = settings.deviceId
             this.licenseInfo = settings.licenseInfo
+            this.classical_enabled = settings.classicalEnabled
         },
         setArtistSeparators(separators: string[]) {
             this.separators = separators
@@ -404,6 +408,9 @@ export default defineStore('settings', {
         },
         updateLicenseInfo(info: LicenseInfo | null) {
             this.licenseInfo = info
+        },
+        async toggleClassicalEnabled() {
+            return await this.genericToggleSetting('classicalEnabled', !this.classical_enabled, 'classical_enabled')
         },
     },
     getters: {

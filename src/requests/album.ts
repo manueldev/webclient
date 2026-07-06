@@ -2,6 +2,7 @@ import { paths } from '@/config'
 import { Album, ClassicalWork, StatItem, Track } from '@/interfaces'
 import { NotifType, useToast } from '@/stores/notification'
 import useAxios from './useAxios'
+import useSettingsStore from '@/stores/settings'
 
 const {
     album: albumUrl,
@@ -12,6 +13,7 @@ const {
 } = paths.api
 
 const getAlbumData = async (albumhash: string, albumlimit: number) => {
+    const settings = useSettingsStore()
     interface AlbumData {
         info: Album
         tracks: Track[]
@@ -33,6 +35,7 @@ const getAlbumData = async (albumhash: string, albumlimit: number) => {
         props: {
             albumhash,
             albumlimit,
+            classical_view: settings.classical_enabled,
         },
     })
 
@@ -109,8 +112,9 @@ export const getAlbumVersions = async (og_album_title: string, albumhash: string
 }
 
 export async function getAlbumTracks(albumhash: string): Promise<Track[] | ClassicalWork[]> {
+    const settings = useSettingsStore()
     const { data } = await useAxios({
-        url: albumUrl + `/${albumhash}/` + 'tracks',
+        url: albumUrl + `/${albumhash}/` + 'tracks' + `?classical_view=${settings.classical_enabled}`,
         method: 'GET',
     })
 

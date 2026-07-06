@@ -115,4 +115,5 @@ export interface DBSettings {
   deviceName: string;
   deviceId: string;
   licenseInfo: LicenseInfo | null;
+  classicalEnabled: boolean
 }

@@ -47,11 +47,13 @@ import Stats from '@/components/Stats/Stats.vue'
 
 import { dropSources } from '@/enums'
 import { isSmall } from '@/stores/content-width'
+import useSettingsStore from '@/stores/settings'
 
 const album = useAlbumStore()
 const queue = useQueueStore()
 const tracklist = useTracklist()
 const route = useRoute()
+const settings = useSettingsStore()
 
 interface ScrollerItem {
     id: string | undefined
@@ -211,7 +213,7 @@ const scrollerItems = computed(() => {
     moreFrom = moreFrom.filter(item => item.id !== undefined)
     const otherVersionsComponent = getAlbumVersionsComponent()
 
-    const pageItems = album.info.is_classical ? getWorkItems() : getSongItems()
+    const pageItems = settings.classical_enabled && album.info.is_classical ? getWorkItems() : getSongItems()
 
     let components = [header, ...pageItems, genreBanner]
 

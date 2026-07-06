@@ -29,10 +29,7 @@ export async function addRootDirs(new_dirs: string[], removed: string[]) {
         return []
     }
 
-    useToast().showNotification(
-        'Root directories configured',
-        NotifType.Success
-    )
+    useToast().showNotification('Root directories configured', NotifType.Success)
 
     return data.root_dirs as string[]
 }
@@ -62,10 +59,13 @@ export async function getFolders(folder: string = '$home') {
     return data.folders as Folder[]
 }
 
-export async function triggerScan() {
+export async function triggerScan(full_scan: boolean = false) {
     const { error } = await useAxios({
         url: paths.api.settings.trigger_scan,
-        method: 'GET',
+        method: 'POST',
+        props: {
+            full_scan,
+        },
     })
 
     if (error) {
@@ -73,5 +73,5 @@ export async function triggerScan() {
         return
     }
 
-    useToast().showNotification('Rescan started', NotifType.Success)
+    useToast().showNotification((full_scan ? 'Full' : 'Quick') + ' scan started', NotifType.Success)
 }
