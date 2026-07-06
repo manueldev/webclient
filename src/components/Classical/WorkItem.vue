@@ -42,7 +42,6 @@ defineEmits<{
 .classicalwork {
     display: flex;
     flex-direction: column;
-    // top spacing comes from WorkHeader
 }
 
 .workmovements {

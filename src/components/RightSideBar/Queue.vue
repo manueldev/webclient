@@ -24,14 +24,15 @@
                     :data-index="index"
                 >
                     <WorkHeader v-if="item.isHeader" :work="item.props.work" :class="{ 'first-item': index === 0 }" />
-                    <component
-                        :is="item.component"
-                        v-else
-                        v-bind="item.props"
-                        :is-current="item.trackIndex === queue.currentindex"
-                        :is-current-playing="item.trackIndex === queue.currentindex && queue.playing"
-                        @playThis="playFromQueue(item.trackIndex)"
-                    ></component>
+                    <div v-else :class="{ 'gap-above': item.gapAbove }">
+                        <component
+                            :is="item.component"
+                            v-bind="item.props"
+                            :is-current="item.trackIndex === queue.currentindex"
+                            :is-current-playing="item.trackIndex === queue.currentindex && queue.playing"
+                            @playThis="playFromQueue(item.trackIndex)"
+                        ></component>
+                    </div>
                 </DynamicScrollerItem>
             </template>
         </DynamicScroller>
@@ -61,6 +62,7 @@ interface QueueScrollerItem {
     trackIndex?: number
     workhash?: string
     isHeader?: boolean
+    gapAbove?: boolean
 }
 
 const itemHeight = 64
@@ -91,6 +93,7 @@ const scrollerItems = computed(() => {
                 id: index,
                 component: TrackItem,
                 trackIndex: index,
+                gapAbove: prevWorkhash !== null,
                 props: { track, index, isQueueTrack: true },
             })
             prevWorkhash = null
@@ -220,6 +223,10 @@ onBeforeUnmount(() => {
 
     .workheader.first-item {
         padding-top: $smaller;
+    }
+
+    .gap-above {
+        padding-top: 1.5rem;
     }
 }
 </style>

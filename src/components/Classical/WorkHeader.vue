@@ -1,7 +1,7 @@
 <template>
     <div class="workheader">
         <div class="workcomposer">
-            {{ work.composer }}
+            <span v-if="work.composer" class="composername">{{ work.composer }}</span>
             <span v-if="playable" class="play" @click.stop="$emit('playWork')"> <PlaySvg /> Play</span>
         </div>
         <div class="worktitle">
@@ -47,7 +47,7 @@ const title = computed(() => {
     gap: 5px;
     padding-left: $small;
     // separates this work from whatever sits above it (previous work or tracks)
-    padding-top: 2rem;
+    padding-top: 1.25rem;
     padding-bottom: $smaller;
 }
 
@@ -63,8 +63,11 @@ const title = computed(() => {
     display: flex;
     align-items: center;
 
+    .composername {
+        margin-right: $smaller;
+    }
+
     .play {
-        margin-left: $small;
         opacity: 0;
         cursor: pointer;
         display: flex;

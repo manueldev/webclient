@@ -117,6 +117,16 @@ export async function getAlbumTracks(albumhash: string): Promise<Track[] | Class
     return data
 }
 
+// the tracks endpoint returns works for classical albums
+export function normalizeAlbumTracks(data: Track[] | ClassicalWork[]): { tracks: Track[]; works?: ClassicalWork[] } {
+    if (data.length && 'movements' in data[0]) {
+        const works = data as ClassicalWork[]
+        return { tracks: works.flatMap(work => work.movements), works }
+    }
+
+    return { tracks: data as Track[] }
+}
+
 export async function getSimilarAlbums(artisthash: string, limit: number = 5): Promise<Album[]> {
     const { data } = await useAxios({
         url: albumUrl + '/similar?' + 'artisthash=' + artisthash + '&albumlimit=' + limit,

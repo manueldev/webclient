@@ -22,7 +22,7 @@
             <HeartSvg :state="is_fav" :no_emit="true" @click.stop="() => addToFav(track.trackhash)" />
         </div>
         <div class="tags">
-            <div v-tooltip class="title">
+            <div v-tooltip class="title" @click.prevent.stop="() => emit('playThis')">
                 <span class="ellip"> {{ track.title }} </span>
             </div>
             <hr />

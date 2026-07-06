@@ -9,7 +9,7 @@ import useTracklist from '@/stores/queue/tracklist'
 import useSettingsStore from '@/stores/settings'
 
 import { Track } from '@/interfaces'
-import { getAlbumTracks } from '@/requests/album'
+import { getAlbumTracks, normalizeAlbumTracks } from '@/requests/album'
 import { getArtistTracks } from '@/requests/artists'
 import { getFavTracks } from '@/requests/favorite'
 import { getFiles } from '@/requests/folders'
@@ -40,14 +40,14 @@ export async function playFromAlbumCard(albumhash: string, albumname: string) {
     const queue = useQueue()
     const tracklist = useTracklist()
 
-    const tracks = await getAlbumTracks(albumhash)
+    const { tracks, works } = normalizeAlbumTracks(await getAlbumTracks(albumhash))
 
     if (tracks.length === 0) {
         useToast().showNotification('Album tracks not found', NotifType.Error)
         return
     }
 
-    tracklist.setFromAlbum(albumname, albumhash, tracks)
+    tracklist.setFromAlbum(albumname, albumhash, tracks, works)
     queue.play()
 }
 
@@ -127,7 +127,12 @@ export const playFrom = async (source: playSources) => {
         case playSources.album: {
             const album = useAlbum()
 
-            tracklist.setFromAlbum(album.info.title, album.info.albumhash, album.srcTracks)
+            tracklist.setFromAlbum(
+                album.info.title,
+                album.info.albumhash,
+                album.srcTracks,
+                album.info.is_classical ? album.works : undefined
+            )
             queue.play()
             break
         }

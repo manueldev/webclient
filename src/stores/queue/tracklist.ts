@@ -168,8 +168,12 @@ export default defineStore('tracklist', {
         addTrack(track: Track) {
             return this.addTracks([track])
         },
-        addTracks(tracks: Track[]) {
+        addTracks(tracks: Track[], works?: ClassicalWork[]) {
             this.insertAt(tracks, this.tracklist.length)
+
+            if (works?.length) {
+                this.indexWorks(works, tracks)
+            }
 
             const Toast = useToast()
             Toast.showNotification(`Added ${tracks.length} tracks to queue`, NotifType.Success)
@@ -227,10 +231,14 @@ export default defineStore('tracklist', {
                 track.is_favorite = !track.is_favorite
             }
         },
-        insertAfterCurrent(tracks: Track[]) {
+        insertAfterCurrent(tracks: Track[], works?: ClassicalWork[]) {
             const { currentindex } = useQueue()
 
             this.tracklist.splice(currentindex + 1, 0, ...tracks)
+
+            if (works?.length) {
+                this.indexWorks(works, tracks)
+            }
 
             const Toast = useToast()
             Toast.showNotification(`Added ${tracks.length} tracks to queue`, NotifType.Success)
