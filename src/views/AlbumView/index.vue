@@ -73,8 +73,8 @@ class songItem {
     props = {}
     component: typeof SongItem | typeof AlbumDiscBar
 
-    constructor(track: Track) {
-        this.id = track.filepath || Math.random()
+    constructor(track: Track, index: number) {
+        this.id = track.is_album_disc_number ? `disc-${track.album_page_disc_number}` : `${track.filepath}-${index}`
         this.props = track.is_album_disc_number
             ? { album_disc: track }
             : {
@@ -92,8 +92,8 @@ class workItem {
     props = {}
     component: typeof WorkItem
 
-    constructor(work: ClassicalWork) {
-        this.id = work.workhash || Math.random()
+    constructor(work: ClassicalWork, index: number) {
+        this.id = `work-${index}-${work.workhash}`
         this.props = {
             work,
         }
@@ -128,14 +128,14 @@ const fetched_similar_hash: ScrollerItem = {
 }
 
 function getSongItems() {
-    return album.tracks.map(track => {
-        return new songItem(track)
+    return album.tracks.map((track, index) => {
+        return new songItem(track, index)
     })
 }
 
 function getWorkItems() {
-    return album.works.map(work => {
-        return new workItem(work)
+    return album.works.map((work, index) => {
+        return new workItem(work, index)
     })
 }
 
