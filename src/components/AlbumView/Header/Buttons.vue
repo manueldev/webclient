@@ -8,6 +8,18 @@
       @handleFav="handleFav"
     />
     <button
+      class="download"
+      :title="'Download album'"
+      :aria-label="'Download album'"
+      @click.prevent="downloadAlbumClick"
+    >
+      <DownloadSvg
+        :style="{
+          color: textColor,
+        }"
+      />
+    </button>
+    <button
       class="options"
       :class="{ context_menu_showing }"
       @click.prevent="showContextMenu"
@@ -29,13 +41,15 @@ import { favType, playSources } from "@/enums";
 import useAlbumStore from "@/stores/pages/album";
 
 import MoreSvg from "@/assets/icons/more.svg";
+import DownloadSvg from "@/assets/icons/download.svg";
 import HeartSvg from "@/components/shared/HeartSvg.vue";
 import PlayBtnRect from "@/components/shared/PlayBtnRect.vue";
+import { downloadAlbum as downloadAlbumTracks } from "@/helpers/download";
 import favoriteHandler from "@/helpers/favoriteHandler";
 import { showAlbumContextMenu } from "@/helpers/contextMenuHandler";
 
 const store = useAlbumStore();
-const { info: album, colors } = storeToRefs(store);
+const { info: album, colors, srcTracks } = storeToRefs(store);
 
 defineProps<{
   textColor: string;
@@ -56,6 +70,11 @@ function handleFav() {
     store.removeFavorite
   );
 }
+
+function downloadAlbumClick() {
+  // Pass already-loaded tracks to avoid an extra round-trip when possible.
+  downloadAlbumTracks(album.value, srcTracks.value?.length ? srcTracks.value : undefined)
+}
 </script>
 
 <style lang="scss">
@@ -63,7 +82,8 @@ function handleFav() {
   display: flex;
   gap: $small;
 
-  .options {
+  .options,
+  .download {
     background-color: transparent;
     border: none;
 

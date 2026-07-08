@@ -8,8 +8,9 @@ import { getAlbumTracks, normalizeAlbumTracks } from '@/requests/album'
 import { addOrRemoveItemFromCollection } from '@/requests/collections'
 import { addAlbumToPlaylist } from '@/requests/playlists'
 
-import { AddToQueueIcon, DeleteIcon, PlayNextIcon, PlusIcon } from '@/icons'
+import { AddToQueueIcon, DeleteIcon, DownloadIcon, PlayNextIcon, PlusIcon } from '@/icons'
 import { Album, ClassicalWork, Collection, Option, Playlist, Track } from '@/interfaces'
+import { downloadAlbum } from '@/helpers/download'
 import { get_find_on_social, getAddToCollectionOptions, getAddToPlaylistOptions } from './utils'
 
 export default async (album?: Album) => {
@@ -108,6 +109,13 @@ export default async (album?: Album) => {
         add_to_queue,
         add_to_playlist,
         ...[router.currentRoute.value.name === Routes.Page ? remove_from_page : add_to_page],
+        <Option>{
+            label: 'Download',
+            action: () => {
+                downloadAlbum(album)
+            },
+            icon: DownloadIcon,
+        },
         get_find_on_social('album', '', album),
     ]
 }

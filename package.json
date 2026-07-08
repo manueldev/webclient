@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "serve": "vite preview",
-    "build": "vite build",
+    "build": "vite build && echo \"3.0.0\" > dist/version.txt",
+    "build:force": "rm -rf node_modules/.vite dist && vite build && echo \"3.0.0\" > dist/version.txt",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo-fill.light.svg",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },

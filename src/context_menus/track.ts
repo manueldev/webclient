@@ -6,7 +6,8 @@ import { Option } from '@/interfaces'
 import { openInFiles } from '@/requests/folders'
 import { addTracksToPlaylist, removeTracks } from '@/requests/playlists'
 
-import { AddToQueueIcon, AlbumIcon, ArtistIcon, DeleteIcon, FolderIcon, PlayNextIcon, PlusIcon } from '@/icons'
+import { AddToQueueIcon, AlbumIcon, ArtistIcon, DeleteIcon, DownloadIcon, FolderIcon, PlayNextIcon, PlusIcon } from '@/icons'
+import { downloadTrack } from '@/helpers/download'
 import useAlbumStore from '@/stores/pages/album'
 import usePlaylistStore from '@/stores/pages/playlist'
 import useQueueStore from '@/stores/queue'
@@ -140,6 +141,14 @@ export default async (track: Track): Promise<Option[]> => {
         icon: AlbumIcon,
     }
 
+    const download: Option = {
+        label: 'Download',
+        action: () => {
+            downloadTrack(track)
+        },
+        icon: DownloadIcon,
+    }
+
     // const del_track: Option = {
     //   label: "Delete Track",
     //   action: () => console.log("Delete Track"),
@@ -171,6 +180,7 @@ export default async (track: Track): Promise<Option[]> => {
         go_to_folder,
         go_to_artist,
         open_in_explorer,
+        download,
         get_find_on_social('track', `${track.title} ${track.artists[0].name}`),
         // del_track,
     ]
